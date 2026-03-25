@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="mr-IN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,151 +7,66 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
-<div class="sidebar no-print">
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img src="logo.png" class="logo-img" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=PC+PLUS'">
-        <h3 style="margin-top:10px; color: white;">Pcplusinfo Solutions</h3>
-    </div>
-    <hr>
-    <nav>
-        <p onclick="showSection('dashboard')">🏠 Dashboard / डॅशबोर्ड</p>
-        <p onclick="showSection('new-repair')">🔧 New Repair / नवीन काम</p>
-        <p onclick="showSection('expenses')">💸 Expenses / खर्च</p>
-    </nav>
-    <hr>
-    <div style="padding: 10px;">
-        <button class="btn btn-success" onclick="backupToExcel()" style="margin-bottom: 10px;">📥 Backup to Excel</button>
-        <label for="restoreFile" class="btn btn-primary" style="display:block; text-align: center; cursor:pointer;">📤 Restore Data</label>
-        <input type="file" id="restoreFile" style="display:none;" onchange="restoreFromExcel(event)">
+<div id="login-page" class="auth-container">
+    <div class="auth-card">
+        <img src="logo.png" class="auth-logo" alt="Pcplusinfo Logo">
+        <h2>Pcplusinfo Solutions</h2>
+        <input type="password" id="pinInput" placeholder="Enter Staff PIN (Default 7447)">
+        <button class="btn btn-primary" onclick="checkLogin()">Login</button>
     </div>
 </div>
 
-<div class="main-content">
-    <section id="dashboard" class="section">
-        <div class="grid-3">
-            <div class="card" style="border-top: 4px solid #27ae60;"><h3>Net Profit / निव्वळ नफा</h3><h2 id="net-profit" style="color:#27ae60;">₹ 0</h2></div>
-            <div class="card" style="border-top: 4px solid #e74c3c;"><h3>Expenses / खर्च</h3><h2 id="total-expenses" style="color:#e74c3c;">₹ 0</h2></div>
-            <div class="card" style="border-top: 4px solid #f39c12;"><h3>Pending / प्रलंबित</h3><h2 id="pending-count" style="color:#f39c12;">0</h2></div>
+<div id="main-app" style="display:none;">
+    <div class="sidebar no-print">
+        <div class="sidebar-header">
+            <img src="logo.png" alt="Logo" class="logo-img">
+            <h3>Pcplusinfo</h3>
         </div>
+        <nav>
+            <p onclick="showSection('dashboard')">📊 Dashboard</p>
+            <p onclick="showSection('new-repair')">🔧 New Repair Job</p>
+            <p onclick="showSection('repairs-list')">📋 Repair List</p>
+            <p onclick="showSection('inventory')">📦 Inventory & Parts</p>
+            <p onclick="showSection('billing')">🧾 Sale Invoice</p>
+            <p onclick="showSection('purchase')">🛒 Purchase Invoice</p>
+            <p onclick="showSection('expenses')">💸 Expenses</p>
+            <p onclick="showSection('profile')">👤 My Profile</p>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn btn-outline" onclick="backupToExcel()">📥 Backup Data</button>
+            <button class="btn btn-outline" onclick="logout()">Logout</button>
+        </div>
+    </div>
 
-        <div class="card">
-            <h3 class="section-title">🛠️ Active Repair Jobs / चालू कामे</h3>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Customer & Warranty</th>
-                            <th>Device & Due Date</th>
-                            <th>Status</th>
-                            <th>Update</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="job-list-body"></tbody>
-                </table>
+    <div class="main-content">
+        <div class="top-bar no-print">
+            <div class="live-revenue">Live Revenue: <span id="live-rev">₹ 0</span></div>
+            <div class="user-info-corner">
+                <p><strong>Akash Pramod Gade</strong></p>
+                <small>+91 7447744751</small>
             </div>
         </div>
 
-        <div class="card no-print">
-            <h3>🔍 Search / शोध</h3>
-            <input type="text" id="searchInput" placeholder="Search Name or Mobile..." onkeyup="quickSearch()">
-        </div>
-    </section>
-
-    <section id="new-repair" class="section" style="display:none;">
-        <div class="card">
-            <h2 class="section-title">Job Intake / नवीन एन्ट्री</h2>
-            <div class="grid-2">
-                <div>
-                    <h4>1. Customer Info</h4>
-                    <input type="text" id="custName" placeholder="Customer Name">
-                    <input type="text" id="custMobile" placeholder="Mobile Number">
-                </div>
-                <div>
-                    <h4>2. Device Info</h4>
-                    <input type="text" id="model" placeholder="Model & Serial No.">
-                    <select id="repairCategory">
-                        <option value="Hardware">🛠️ Hardware Repair</option>
-                        <option value="Software">💻 Software/OS</option>
-                        <option value="Cleaning">🧹 Service/Cleaning</option>
-                    </select>
-                </div>
+        <section id="dashboard" class="section">
+            <div class="grid-3">
+                <div class="card stat-card pending"><h4>Pending</h4><h2 id="dash-pending">0</h2></div>
+                <div class="card stat-card completed"><h4>Completed</h4><h2 id="dash-done">0</h2></div>
+                <div class="card stat-card revenue"><h4>Total Sales</h4><h2 id="dash-sales">₹ 0</h2></div>
             </div>
-
-            <div class="grid-2">
-                <div>
-                    <label>Expected Delivery Date:</label>
-                    <input type="date" id="deliveryDate">
-                </div>
-                <div>
-                    <label>New Part Serial (Optional):</label>
-                    <input type="text" id="partSerial" placeholder="SSD/RAM SN">
-                </div>
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <div id="recent-list"></div>
             </div>
+        </section>
 
-            <h4>3. Camera / फोटो काढा</h4>
-            <video id="video" width="100%" autoplay style="display:none; border-radius: 8px;"></video>
-            <canvas id="photo-canvas" style="display:none;"></canvas>
-            <img id="captured-img" style="width: 200px; display: none; margin: 10px 0; border: 2px solid #ddd;">
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <button class="btn btn-primary" onclick="startCamera()">Open Camera</button>
-                <button class="btn btn-success" onclick="takePhoto()">Capture Photo</button>
-            </div>
+        <section id="new-repair" class="section" style="display:none;">
+            <div class="card">
+                <h2 class="section-title">New Repair Intake</h2>
+                
+                <div class="form-grid">
 
-            <div class="grid-2">
-                <input type="number" id="estCost" placeholder="Service Charge (₹)" onkeyup="calculateGst()">
-                <div>
-                    <label><input type="checkbox" id="gstToggle" onchange="calculateGst()"> Add 18% GST</label>
-                    <p id="gstDisplay" style="font-size: 12px; color: gray;"></p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <select id="payMethod">
-                    <option value="UPI">📱 UPI / GPay</option>
-                    <option value="Cash">💵 Cash / रोख</option>
-                </select>
-                <select id="warrantyMonths">
-                    <option value="0">No Warranty</option>
-                    <option value="3">3 Months</option>
-                    <option value="6">6 Months</option>
-                    <option value="12">1 Year</option>
-                </select>
-            </div>
-
-            <textarea id="internalNotes" placeholder="Internal Shop Notes (Private - Not on receipt)"></textarea>
-
-            <h4>4. Signature / स्वाक्षरी</h4>
-            <div style="border: 1px dashed #ccc; background: #fff;"><canvas id="signature-pad" width="450" height="120" style="width: 100%;"></canvas></div>
-            
-            <button class="btn btn-primary" onclick="generateReceipt()" style="margin-top:20px; font-size: 1.2em;">Save & Generate Receipt</button>
-        </div>
-    </section>
-
-    <section id="print-area" style="display:none; background:white; padding:30px;">
-        <div style="text-align: center;">
-            <img src="logo.png" style="height: 60px;">
-            <h1 style="color:#007bbd; margin:5px 0;">Pcplusinfo Solutions</h1>
-            <p>Shop No. 1, Janaki Nivas, Vadgaon Budruk, Pune-411041</p>
-            <hr>
-        </div>
-        <div id="receipt-content"></div>
-        <div style="display:flex; justify-content:space-between; margin-top:30px;">
-            <div><p>Customer Signature:</p><img id="printed-sig" style="width:120px;"></div>
-            <div style="text-align:right;"><p><strong>For Pcplusinfo Solutions</strong></p><br><p>Authorised Signatory</p></div>
-        </div>
-        <div class="no-print" style="margin-top:20px; display:flex; gap:10px;">
-            <button class="btn btn-primary" onclick="window.print()">Print Receipt</button>
-            <button class="btn btn-success" onclick="printSmallLabel()">Print Asset Label</button>
-        </div>
-    </section>
-</div>
-
-<script src="app.js"></script>
-</body>
-  </html>
-  
+                    
