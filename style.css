@@ -1,0 +1,17 @@
+:root { --primary: #007bbd; --dark: #2c3e50; --bg: #f4f7f6; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+.sidebar { width: 260px; background: var(--dark); height: 100vh; position: fixed; color: white; padding: 20px; box-sizing: border-box; }
+.sidebar p { padding: 12px; cursor: pointer; border-radius: 5px; margin: 8px 0; transition: 0.3s; }
+.sidebar p:hover { background: var(--primary); }
+.main-content { margin-left: 260px; padding: 30px; }
+.card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 25px; }
+.grid-2, .grid-3 { display: grid; gap: 20px; }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.btn-primary { background: var(--primary); color: white; width: 100%; }
+.btn-success { background: #27ae60; color: white; width: 100%; }
+input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+@media print { .no-print { display: none !important; } .main-content { margin: 0; } #print-area { display: block !important; } }
